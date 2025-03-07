@@ -141,7 +141,7 @@ if (!('antiDiscord' in chat)) chat.antiDiscord = false
 if (!('antiThreads' in chat)) chat.antiThreads = false 
 if (!('antiTwitch' in chat)) chat.antiTwitch = false
 if (!('antifake' in chat)) chat.antifake = false
-if (!("detect" in chat)) chat.detect = true
+if (!("detect" in chat)) chat.detect = false
 if (!("autoapprove" in chat)) chat.autoapprove = false
 if (!("getmsg" in chat)) chat.getmsg = true
 if (!("isBanned" in chat)) chat.isBanned = false
@@ -185,7 +185,7 @@ antiTwitch: false,
 antifake: false,
 antiBotClone: false,
 antiBot: false,
-detect: true,
+detect: false,
 autoapprove: false,
 expired: 0,
 getmsg: true,
@@ -720,25 +720,32 @@ export async function participantsUpdate({ id, participants, action }) {
     }
 }
 
+
 /**
  * Handle groups update
  * @param {import('@whiskeysockets/baileys').BaileysEventMap<unknown>['groups.update']} groupsUpdate 
  */
 
+global.db = global.db || {}; // Initialize global.db if undefined
+global.db.data = global.db.data || {}; // Initialize global.db.data if undefined
+global.db.data.lastGroupUpdate = global.db.data.lastGroupUpdate || {}; // Initialize lastGroupUpdate
+
 export async function groupsUpdate(groupsUpdate) {
-    if (opts['self'])
-        return
+    if (opts['self']) return;
     for (const groupUpdate of groupsUpdate) {
-        const id = groupUpdate.id
-        if (!id) continue
-        let chats = global.db.data.chats[id], text = ''
-        if (!chats?.detect) continue
-        if (groupUpdate.desc) text = (chats.sDesc || this.sDesc || conn.sDesc || 'Description changed to \n@desc').replace('@desc', groupUpdate.desc)
-        if (groupUpdate.subject) text = (chats.sSubject || this.sSubject || conn.sSubject || 'The name of the group changed to \n@group').replace('@group', groupUpdate.subject)
-        if (groupUpdate.icon) text = (chats.sIcon || this.sIcon || conn.sIcon || 'The group icon changed to').replace('@icon', groupUpdate.icon)
-        if (groupUpdate.revoke) text = (chats.sRevoke || this.sRevoke || conn.sRevoke || 'Group link changes to\n@revoke').replace('@revoke', groupUpdate.revoke)
-        if (!text) continue
-        await this.sendMessage(id, { text, mentions: this.parseMention(text) })
+        const id = groupUpdate.id;
+        if (!id) continue;
+        let chats = global.db.data.chats[id];
+        if (!chats?.detect) continue;
+        if (global.db.data.lastGroupUpdate[id] && global.db.data.lastGroupUpdate[id] >= Date.now() - 30000) continue; // Skip updates within 30 seconds
+        global.db.data.lastGroupUpdate[id] = Date.now(); // Update timestamp
+        let text = '';
+        if (groupUpdate.desc) text = (chats.sDesc || this.sDesc || conn.sDesc || 'Description changed to \n@desc').replace('@desc', groupUpdate.desc);
+        if (groupUpdate.subject) text = (chats.sSubject || this.sSubject || conn.sSubject || 'The name of the group changed to \n@group').replace('@group', groupUpdate.subject);
+        if (groupUpdate.icon) text = (chats.sIcon || this.sIcon || conn.sIcon || 'The group icon changed to').replace('@icon', groupUpdate.icon);
+        if (groupUpdate.revoke) text = (chats.sRevoke || this.sRevoke || conn.sRevoke || 'Group link changes to\n@revoke').replace('@revoke', groupUpdate.revoke);
+        if (!text) continue;
+        await this.sendMessage(id, { text, mentions: this.parseMention(text) });
     }
 }
 
