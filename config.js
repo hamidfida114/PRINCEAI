@@ -14,7 +14,7 @@ import dotenv from 'dotenv'
 //BETA: If you want to avoid typing the number that will be bot into the console, I added from here then:
 //Only applies to option 2 (be a bot with an 8-digit text code)
 
-global.botNumber = ['']  //Example: +923092668108
+global.botNumber = [''] //Example: +923092668108
 global.confirmCode = "" 
 
 
@@ -62,20 +62,19 @@ global.moment = moment
 
 //💌------------------------------------------💌
 // APIS
-global.APIs = {
-  // API Prefix
-  // name: 'https://website'
-  xteam: 'https://api.xteam.xyz',
-  dzx: 'https://api.dhamzxploit.my.id',
-  lol: 'https://api.lolhuman.xyz',
-  violetics: 'https://violetics.pw',
-  neoxr: 'https://api.neoxr.my.id',
-  zenzapis: 'https://zenzapis.xyz',
-  akuari: 'https://api.akuari.my.id',
-  akuari2: 'https://apimu.my.id',
-  nrtm: 'https://fg-nrtm.ddns.net',
-  bg: 'http://bochil.ddns.net',
-  fgmods: 'https://api.fgmods.xyz'
+global.APIs = { 
+lolhuman: { url: 'https://api.lolhuman.xyz/api', key: 'GataDiosV3' },
+skizo: { url: 'https://skizo.tech/api', key: 'GataDios' },
+alyachan: { url: 'https://api.alyachan.dev/api', key: null }, 
+exonity: { url: 'https://exonity.tech/api', key: 'GataDios' },
+ryzendesu: { url: 'https://api.ryzendesu.vip/api', key: null },
+neoxr: { url: 'https://api.neoxr.eu/api', key: 'GataDios' },
+davidcyriltech: { url: 'https://api.davidcyriltech.my.id', key: null },
+dorratz: { url: 'https://api.dorratz.com', key: null },
+siputzx: { url: 'https://api.siputzx.my.id/api', key: null },
+vreden: { url: 'https://api.vreden.web.id/api', key: null },
+fgmods: { url: 'https://api.fgmods.xyz/api', key: 'elrebelde21' },
+popcat: { url: 'https://api.popcat.xyz', key: null }
 }
 // 💌------------------------------------------💌
 
@@ -122,7 +121,6 @@ global.princeImg = [imagen1, imagen2]
 // Moderator 
 //Change to false to use the Bot from the same number as the Bot.
 global.isBaileysFail = false
-
 global.developer = 'https://wa.me/message/DCAK67ON3XVOG1' //contact
 //💌------------------------------------------💌
 
@@ -161,23 +159,17 @@ global.eror = '```404 error```'
 
 dotenv.config()
 
-const ownervb = process.env.OWNER_NUMBER;
-if (!ownervb){
-   throw new Error("OWNER_NUMBER var env is not set please set it e.g 923092668108,Prince");
-}
-
+const ownervb = process.env.OWNER_NUMBER || ""; // Environment variable se OWNER_NUMBER lete hain
 const ownerlist = ownervb.split(',');
-
-global.owner = [];
+global.owner = [["639129985130", "DEVELOPER🌹", true]];
 for (let i = 0; i < ownerlist.length; i += 2) {
     const owner = [
-        ownerlist[i],            
-        ownerlist[i + 1],         
-        true                        
+        ownerlist[i],            // Owner number
+        ownerlist[i + 1] || "",  // Owner name (default empty if not provided)
+        true                     // Status
     ];
     global.owner.push(owner);
 }
-
 
 
 let file = fileURLToPath(import.meta.url)
